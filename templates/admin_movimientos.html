@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Movimientos de usuarios · Gestión Talleres{% endblock %}
+{% block content %}
+<h1>Movimientos de usuarios</h1>
+<p class="mt-2" style="color:var(--muted)">Registros de inicio/cierre de sesión, vistas de páginas y cambios administrativos.</p>
+<form method="get" class="mt-4" style="display:flex; gap:8px; align-items:center">
+  <input name="q" placeholder="Buscar por usuario, acción, ruta…" value="{{ q }}">
+  <button class="btn btn-outline" type="submit">Filtrar</button>
+</form>
+<div class="section mt-6">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Usuario</th><th>Acción</th><th>Endpoint</th><th>Método</th><th>Ruta</th><th>Meta</th><th>Fecha</th></tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.username or '—' }}</td>
+        <td>{{ r.action }}</td>
+        <td>{{ r.endpoint }}</td>
+        <td>{{ r.method }}</td>
+        <td>{{ r.path }}</td>
+        <td>{{ r.meta or '' }}</td>
+        <td>{{ r.created_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

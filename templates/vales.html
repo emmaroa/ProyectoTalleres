@@ -1,0 +1,189 @@
+{% extends "layout.html" %}
+{% block title %}Vales · Gestión Talleres{% endblock %}
+{% block content %}
+<!-- 
+<div class="table-toolbar">
+  <div class="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14Zm10 18l-5.2-5.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input type="search" placeholder="Buscar..." data-table-search="#tabla-vales">
+  </div>
+<div class="filters">
+  <div class="chips" data-chips-dep="#tabla-vales"></div>
+  <div class="chips" data-chips-status="#tabla-vales"></div>
+  <div class="row">
+    <div class="field">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <input type="date" placeholder="Desde" data-date-from="#tabla-vales">
+    </div>
+    <div class="field">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <input type="date" placeholder="Hasta" data-date-to="#tabla-vales">
+    </div>
+    <div class="actions">
+      <button class="btn btn-muted" onclick="const p=new URLSearchParams(location.search);['dep','status','from','to','q'].forEach(k=>p.delete(k)); history.replaceState(null,'',location.pathname); applyAllFilters();">Limpiar filtros</button>
+    </div>
+  </div>
+</div>
+
+  <div class="btn-group">
+    <button class="btn" data-export-csv="#tabla-vales" data-filename="tabla-vales">Exportar CSV</button>
+    <button class="btn btn-outline" onclick="document.getElementById('tabla-vales').classList.toggle('dense')">Densidad</button>
+  </div>
+</div>
+
+-->
+<div class="header">
+  <h1>Registro de Vale de Entrega</h1>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Escudo_de_Hermosillo.svg/800px-Escudo_de_Hermosillo.svg.png" alt="Escudo de Hermosillo" class="header-image">
+  <p class="header-text"><strong>H. AYUNTAMIENTO DE HERMOSILLO</strong><br>OFICIALÍA MAYOR<br>DIRECCIÓN DE TALLERES</p>
+</div>
+
+<style>
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+
+  .header-image {
+    width: 60px;
+    height: 60px;
+    margin-right: 15px; /* Espacio entre imagen y texto */
+  }
+
+  .header-text {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.5;
+  }
+</style>
+<form id="formVale">
+  <label>Fecha:</label>
+  <input type="text" id="fecha" readonly>
+
+  <label>Folio:</label>
+  <input type="text" id="folio" readonly>
+
+  <label>Unidad:</label>
+  <input type="number" name="unidad" required>
+
+  <label>Refacciones:</label>
+  <div class="table-wrap"><table id="tabla-vales" class="data-table data-table" id="tabla-vales">
+    <tr>
+      <th>Cantidad</th>
+      <th>Descripción</th>
+    </tr>
+    <tr><td><input name='cantidad1'></td><td><input name='descripcion1'></td></tr>
+    <tr><td><input name='cantidad2'></td><td><input name='descripcion2'></td></tr>
+    <tr><td><input name='cantidad3'></td><td><input name='descripcion3'></td></tr>
+    <tr><td><input name='cantidad4'></td><td><input name='descripcion4'></td></tr>
+    <tr><td><input name='cantidad5'></td><td><input name='descripcion5'></td></tr>
+    <tr><td><input name='cantidad6'></td><td><input name='descripcion6'></td></tr>
+  </table></div>
+
+  <label>Quién entrega:</label>
+  <input type="text" name="entrega" required>
+
+  <label>Quién recibe:</label>
+  <input type="text" name="recibe" required>
+
+  <button type="submit">Guardar</button>
+</form>
+
+<div id="formatoImpresion" class="printable">
+  <!-- Imagen y texto en el formato imprimible -->
+  <div class="header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Escudo_de_Hermosillo.svg/800px-Escudo_de_Hermosillo.svg.png" alt="Escudo de Hermosillo" class="header-image">
+    <div class="header-text">
+      <p>H. AYUNTAMIENTO DE HERMOSILLO<br>OFICIALÍA MAYOR<br>DIRECCIÓN DE TALLERES</p>
+      <h2>VALE DE REFACCIONES</h2>
+    </div>
+  </div>
+
+  <p><strong>Fecha:</strong> <span id="printFecha"></span></p>
+  <p><strong>Folio:</strong> <span id="printFolio"></span></p>
+  <p><strong>Unidad:</strong> <span id="printUnidad"></span></p>
+  <p><strong>Refacciones:</strong></p>
+  <ul id="printRefacciones"></ul>
+  <p><strong>Entrega:</strong> <span id="printEntrega"></span></p>
+  <p><strong>Recibe:</strong> <span id="printRecibe"></span></p>
+  <br>
+  <div class="firma">
+    <p><strong>Firma de recibido: __________________________</strong></p>
+  </div>
+</div>
+
+<script>
+document.getElementById("fecha").value = new Date().toLocaleDateString("es-MX");
+
+// Simulador de folio automático
+let folioActual = localStorage.getItem("folio") || 0;
+const anio = new Date().getFullYear();
+folioActual++;
+const folioFormato = folioActual.toString().padStart(4, '0') + '-' + anio;
+document.getElementById("folio").value = folioFormato;
+localStorage.setItem("folio", folioActual);
+
+document.getElementById("formVale").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const form = e.target;
+
+  // Construir datos para enviar
+  const data = new FormData(form);
+  const params = new URLSearchParams();
+  for (const pair of data.entries()) {
+    params.append(pair[0], pair[1]);
+  }
+
+  fetch('https://script.google.com/macros/s/AKfycbxAoiKlIN9pmapcYNYxgT58w9JJaFA0xuoKmV2CGqL2mdvECCC9IXXdzChjSpWSy6Bk6Q/exec', {
+    method: 'POST',
+    body: params
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.message.includes("correctamente")) {
+      // Llenar formato de impresión
+      document.getElementById("printFecha").innerText = document.getElementById("fecha").value;
+      document.getElementById("printFolio").innerText = document.getElementById("folio").value;
+      document.getElementById("printUnidad").innerText = data.get("unidad");
+      document.getElementById("printEntrega").innerText = data.get("entrega");
+      document.getElementById("printRecibe").innerText = data.get("recibe");
+
+      const lista = document.getElementById("printRefacciones");
+      lista.innerHTML = "";
+      for (let i = 1; i <= 6; i++) {
+        const c = data.get("cantidad" + i);
+        const d = data.get("descripcion" + i);
+        if (c || d) {
+          lista.innerHTML += `<li>${c || '-'} ${d || '-'}</li>`;
+        }
+      }
+
+      document.getElementById("formatoImpresion").style.display = "block";
+      window.print();
+
+      // Limpiar formulario
+      form.reset();
+    } else {
+      alert("Error al guardar: " + result.error);
+    }
+  });
+});
+</script>
+{% if session.get('role') == 'admin' and 'vales.html' == 'index.html' %}
+<hr>
+<h3>Admin rápido: crear usuario</h3>
+<form class="inline" method="post" action="{{ url_for('create_user') }}">
+  <input name="username" placeholder="nuevo usuario" required>
+  <input name="password" placeholder="contraseña" required>
+  <select name="role">
+    <option value="lectura">lectura</option>
+    <option value="captura">captura</option>
+    <option value="admin">admin</option>
+  </select>
+  <button type="submit">Crear</button>
+</form>
+{% endif %}
+{% endblock %}

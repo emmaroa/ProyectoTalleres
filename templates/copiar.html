@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block title %}Copiar & Pegar · Gestión Talleres{% endblock %}
+{% block content %}
+<h1>Copiar & Pegar rápidos</h1>
+<p class="mt-2" style="color:var(--muted)">Haz clic en cualquier campo para copiarlo al portapapeles. Ideal para requisiciones, seguimiento, órdenes de compra y portal.</p>
+
+<div class="section grid cols-2 mt-6">
+  <div class="card">
+    <h2>Para requisiciones</h2>
+    <div class="section grid">
+      <input readonly onclick="copyInput(this)" value="TALLERES, REFACCIONES PARA UNIDAD">
+      <input readonly onclick="copyInput(this)" value="ALMACEN DE TALLERES">
+      <input readonly onclick="copyInput(this)" value="JUAN FERNANDO MOLINA ARVAYO">
+      <input readonly onclick="copyInput(this)" value="6622449069">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Seguimiento</h2>
+    <div class="section grid">
+      <input readonly onclick="copyInput(this)" value="SEGUIMIENTO DE PROCEDIMIENTO">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Órdenes de compra</h2>
+    <div class="section grid">
+      <input readonly onclick="copyInput(this)" value="SUBDIRECTOR ADMINISTRATIVO TALLERES">
+      <input readonly onclick="copyInput(this)" value="ING. VICTOR EMMANUEL ZARATE IBARRA">
+      <input readonly onclick="copyInput(this)" value="DIRECTOR DE TALLERES">
+      <input readonly onclick="copyInput(this)" value="ING. HECTOR MANUEL DIAZ Y YOUNG">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Portal web</h2>
+    <div class="section grid">
+      <input readonly onclick="copyInput(this)" value="HERMOSILLO, SONORA.">
+    </div>
+  </div>
+
+  <div class="card" style="grid-column: 1 / -1;">
+    <h2>Solicitudes de pago</h2>
+    <div class="section grid cols-2">
+      <input readonly onclick="copyInput(this)" value="XXXX: PAGO DE FACTURA XXX POR ADQUISICION DE XXX PARA UNIDAD XXX DE XXX">
+      <input readonly onclick="copyInput(this)" value="OC XXX REQ XXX E XXXXX">
+      <input readonly onclick="copyInput(this)" value="PROCEDIMIENTO EN PORTAL WEB DE COMPRAS: T-">
+    </div>
+
+    <h3 class="mt-6" style="color:var(--brand-2)">Solicitudes de pago (multilínea)</h3>
+    <textarea readonly onclick="copyInput(this)" rows="4">XXXX : PAGO DE FACTURA XXX  POR ADQUISICION DE XXX  PARA UNIDAD XXX DE XXX
+OC XXX REQ XXX E XXXXX
+PROCEDIMIENTO EN PORTAL WEB DE COMPRAS: T-</textarea>
+  </div>
+</div>
+
+<style>
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:var(--c5);color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);
+  opacity:0;transition:all .18s ease}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<script>
+async function copyInput(el){
+  try{
+    const value = el.value || el.textContent;
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+    } else {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = value; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    toast('Copiado');
+  }catch(e){
+    console.error(e);
+    toast('No se pudo copiar');
+  }
+}
+function toast(msg){
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg; document.body.appendChild(t);
+  requestAnimationFrame(()=> t.classList.add('show'));
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(), 180); }, 1200);
+}
+</script>
+{% endblock %}

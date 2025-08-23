@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+{% block title %}Peticiones · Gestión Talleres{% endblock %}
+{% block content %}
+<style>
+.imagen-mediana {
+  width: 48px;
+  height: auto;
+  vertical-align: middle;
+  margin-right: 12px;
+}
+</style>
+<header>
+    <h1>
+      <img 
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Escudo_de_Hermosillo.svg/509px-Escudo_de_Hermosillo.svg.png" 
+        alt="Escudo de Hermosillo" 
+        class="imagen-mediana"
+      >
+      Registro de Petición de Refacciones
+    </h1>
+  </header>
+  <main>
+    <form id="formulario_pet">
+      <label for="unidad">Unidad:</label>
+      <input type="text" id="unidad" name="unidad" pattern="\d+" title="Solo números" placeholder="Ejemplo: 01535" required>
+
+      <label for="peticion">Petición:</label>
+      <input type="text" id="peticion" name="peticion" placeholder="Ejemplo: Filtro de aire" required>
+
+      <label for="solicita">¿Quién Solicita?</label>
+      <input type="text" id="solicita" name="solicita" placeholder="Ejemplo: Juan Pérez" required>
+
+      <label for="muestra">¿Se deja muestra?</label>
+      <select id="muestra" name="muestra" required>
+        <option value="">Seleccione...</option>
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+      </select>
+
+    <button type="submit">
+      <span id="spinner" class="spinner" style="display: none;"></span>
+      <span id="check" class="check" style="display: none;">✔️</span>
+      <span id="boton-texto">Enviar Pedido</span>
+    </button>
+
+    </form>
+      <div id="mensaje"></div>
+  </main>
+  
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwyiXo94rLogLHNMePCmWFHIkAlQQF0yka3kfMtgWW6CMz50vCuGc0SV16sOICpjtbK/exec';
+    const form = document.getElementById('formulario_pet');
+    const mensaje = document.getElementById('mensaje');
+    const boton = form.querySelector('button');
+    const spinner = document.getElementById('spinner');
+    const check = document.getElementById('check');
+    const botonTexto = document.getElementById('boton-texto');
+
+    
+   form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const data = {
+    unidad: document.getElementById('unidad').value,
+    peticion: document.getElementById('peticion').value,
+    solicita: document.getElementById('solicita').value,
+    muestra: document.getElementById('muestra').value
+  };
+try {
+    const response = await fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const result = await response.json();
+    mensaje.style.color = 'green';
+    mensaje.textContent = result.message;
+    mensaje.style.display = 'block';
+    form.reset();
+
+    spinner.style.display = 'none';
+    check.style.display = 'inline-block';
+    botonTexto.textContent = 'Enviado';
+
+    setTimeout(() => {
+      check.style.display = 'none';
+      botonTexto.textContent = 'Enviar Pedido';
+      boton.disabled = false;
+    }, 2000);
+  } catch (error) {
+    mensaje.style.color = 'red';
+    mensaje.textContent = 'Ocurrió un problema al enviar los datos. Intenta nuevamente.';
+    mensaje.style.display = 'block';
+    spinner.style.display = 'none';
+    botonTexto.textContent = 'Enviar Pedido';
+    boton.disabled = false;
+  }
+});
+  </script>
+{% if session.get('role') == 'admin' and 'peticiones.html' == 'index.html' %}
+<hr>
+<h3>Admin rápido: crear usuario</h3>
+<form class="inline" method="post" action="{{ url_for('create_user') }}">
+  <input name="username" placeholder="nuevo usuario" required>
+  <input name="password" placeholder="contraseña" required>
+  <select name="role">
+    <option value="lectura">lectura</option>
+    <option value="captura">captura</option>
+    <option value="admin">admin</option>
+  </select>
+  <button type="submit">Crear</button>
+</form>
+{% endif %}
+{% endblock %}

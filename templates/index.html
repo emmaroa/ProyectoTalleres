@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block title %}Gestión Talleres{% endblock %}
+{% block content %}
+<section class="landing">
+  <div class="landing-inner">
+    <h1>Gestión Talleres</h1>
+    <p class="lead">Bienvenido. Aquí pronto verás tu dashboard.</p>
+
+    <div class="nav-wrap">
+      <div class="nav-cards">
+        <a href="{{ url_for('parque') }}" class="card">
+          <div class="icon">🚗</div>
+          <h3>Parque Vehicular</h3>
+          <p>Consulta y gestiona vehículos</p>
+        </a>
+        <a href="{{ url_for('peticiones') }}" class="card">
+          <div class="icon">📝</div>
+          <h3>Peticiones</h3>
+          <p>Solicitudes de refacciones</p>
+        </a>
+        <a href="{{ url_for('vales') }}" class="card">
+          <div class="icon">📄</div>
+          <h3>Vales</h3>
+          <p>Registro de vales</p>
+        </a>
+        <a href="{{ url_for('seguimiento') }}" class="card">
+          <div class="icon">📊</div>
+          <h3>Trámites</h3>
+          <p>Seguimiento de trámites</p>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+.landing{
+  position:relative; min-height:80vh; border-radius:var(--radius); overflow:hidden; display:grid; place-items:center;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(253,147,25,.12), transparent 40%),
+    radial-gradient(1000px 500px at 110% 10%, rgba(7,177,188,.16), transparent 40%),
+    linear-gradient(180deg, #fdfefe, #f3f8f9);
+}
+.landing:before{
+  content:''; position:absolute; inset:0; background:url('{{ url_for('static', filename='img/landing.png') }}') center/cover no-repeat;
+  opacity:.98; filter: drop-shadow(0 20px 40px rgba(0,0,0,.08));
+}
+.landing-inner{
+  position:relative; z-index:1; background:rgba(255,255,255,.70); backdrop-filter: blur(6px);
+  border:1px solid rgba(43,129,128,.12); padding:clamp(18px,3vw,28px);
+  border-radius:var(--radius); box-shadow:var(--shadow); text-align:center;
+  width:min(980px, 92vw);
+}
+
+/* Texto */
+.landing .lead{ font-size: clamp(16px, 2.4vw, 18px); margin-top: 8px }
+
+.nav-wrap{
+  margin-top: 18px;
+  max-height: clamp(220px, 80vh, 320px);
+  overflow:auto;               
+  padding-right: 6px;          
+}
+
+.nav-cards{
+  column-gap: 10px;
+  column-fill: balance;
+  column-count: 2;
+}
+@media (max-width: 900px){ .nav-cards{ column-count: 2; } }
+@media (max-width: 560px){ .nav-cards{ column-count: 1; } }
+
+.card{
+  display:inline-block;        
+  width:100%;                  
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin: 0 0 16px;            
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  text-decoration: none; color: inherit;
+  break-inside: avoid;         
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  border:1px solid rgba(43,129,128,.10);
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.15);
+  background: #fffdfa;
+}
+.card .icon{ font-size: 28px; line-height: 1; margin-bottom: 6px }
+.card h3{ margin: 6px 0 2px; font-size: 16px; color:#ff7f11 }
+.card p{ font-size: 13px; color:#555 }
+
+
+.nav-wrap::-webkit-scrollbar{ width: 10px }
+.nav-wrap::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, rgba(255,127,17,.7), rgba(7,177,188,.6));
+  border-radius: 999px;
+}
+.nav-wrap::-webkit-scrollbar-track{ background: transparent }
+</style>
+{% endblock %}

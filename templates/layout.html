@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Gestión Talleres{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+
+  <nav class="navbar" aria-label="Barra de navegación principal">
+    <div class="nav-inner">
+      <a class="brand" href="{{ url_for('index') }}">
+        <span class="logo" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 12L12 4l8 8-8 8-8-8Z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="12" cy="12" r="2.75" fill="currentColor"/>
+          </svg>
+        </span>
+        <span>Menú Principal</span>
+      </a>
+      <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div id="menu" class="menu" role="menubar">
+        {% if request.endpoint != 'index' %}
+          {% if session.get('username') %}
+            <a role="menuitem" href="{{ url_for('parque') }}" class="{% if request.endpoint == 'parque' %}active{% endif %}">Parque vehicular</a>
+            {% if session.get('role') in ['admin','captura'] %}
+              <a role="menuitem" href="{{ url_for('peticiones') }}" class="{% if request.endpoint == 'peticiones' %}active{% endif %}">Peticiones</a>
+              <a role="menuitem" href="{{ url_for('vales') }}" class="{% if request.endpoint == 'vales' %}active{% endif %}">Vales</a>
+            {% endif %}
+            <a role="menuitem" href="{{ url_for('seguimiento') }}" class="{% if request.endpoint == 'seguimiento' %}active{% endif %}">Seguimiento</a>
+            {% if session.get('role') == 'admin' %}
+              <a role="menuitem" href="{{ url_for('copiar') }}" class="{% if request.endpoint == 'copiar' %}active{% endif %}">Copiar & Pegar</a>
+              <a role="menuitem" href="{{ url_for('admin_usuarios') }}" class="{% if request.endpoint == 'admin_usuarios' %}active{% endif %}">Usuarios</a>
+              <a role="menuitem" href="{{ url_for('admin_movimientos') }}" class="{% if request.endpoint == 'admin_movimientos' %}active{% endif %}">Movimientos</a>
+            {% endif %}
+            <span class="spacer"></span>
+            <span class="badge">👤 {{ session['username'] }} · {{ session['role'] }}</span>
+            <a role="menuitem" href="{{ url_for('logout') }}">Salir</a>
+          {% else %}
+            <span class="spacer"></span>
+            <a role="menuitem" href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Iniciar sesión</a>
+          {% endif %}
+        {% else %}
+          <span class="spacer"></span>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <script defer src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <section class="page-card">
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand">Gestión Talleres</div>
+      <nav class="footer-links" aria-label="Enlaces del sitio">
+        {% if session.get('username') %}
+          <a href="{{ url_for('parque') }}">Parque vehicular</a>
+          {% if session.get('role') in ['admin','captura'] %}
+            <a href="{{ url_for('peticiones') }}">Peticiones</a>
+            <a href="{{ url_for('vales') }}">Vales</a>
+          {% endif %}
+          <a href="{{ url_for('seguimiento') }}">Seguimiento</a>
+          {% if session.get('role') == 'admin' %}
+            <a href="{{ url_for('copiar') }}">Copiar & Pegar</a>
+            <a href="{{ url_for('admin_usuarios') }}">Usuarios</a>
+            <a href="{{ url_for('admin_movimientos') }}">Movimientos</a>
+          {% endif %}
+        {% else %}
+          <a href="{{ url_for('login') }}">Iniciar sesión</a>
+        {% endif %}
+      </nav>
+      <div class="footer-meta">&copy; 2025 Dirección de Talleres · Hermosillo.</div>
+    </div>
+  </footer>
+</body>
+</html>

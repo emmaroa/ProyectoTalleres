@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% block title %}Seguimiento · Gestión Talleres{% endblock %}
+{% block content %}
+<header>
+    <h1>Consulta de Requisiciones y Compras</h1>
+  </header>
+
+  <div class="main-screen">
+    <h2>Filtrar Información</h2>
+    <input type="text" id="filtroFecha" placeholder="Fecha" />
+    <input type="text" id="filtroRequisicion" placeholder="Requisición" />
+    <input type="text" id="filtroOrden" placeholder="Orden de Compra" />
+    <input type="text" id="filtroDependencia" placeholder="Dependencia" />
+    <input type="text" id="filtroProveedor" placeholder="Proveedor" />
+    <input type="text" id="filtroNumero" placeholder="Número Económico" />
+    <input type="text" id="filtroPedido" placeholder="Pedido" />
+
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Requisición</th>
+          <th>Orden de Compra</th>
+          <th>Dependencia</th>
+          <th>Pedido</th>
+          <th>Status SIFF</th>
+          <th>Proveedor</th>
+          <th>Unidad</th>
+          <th>Descripción de Unidad</th>
+          <th>Monto</th>
+          <th>Factura</th>
+        </tr>
+      </thead>
+      <tbody id="dataTable"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const apiKey = 'AIzaSyDM8m9-bZM2stDAt1V0i-H-iStD0Vi6Z7k';
+    const sheetId = '1L6EsYC_PNp7lxjqTgVaGEFuXsINWBUsxWYsMzBAQ55Y';
+    const range = 'Requis!A2:N'; // Datos desde fila 2 para omitir encabezados
+
+    const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+
+    async function fetchData() {
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        return data.values || [];
+      } catch (error) {
+        console.error('Error al obtener datos:', error);
+        return [];
+      }
+    }
+
+    function renderTable(data) {
+      const table = document.getElementById('dataTable');
+      table.innerHTML = '';
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        const selectedColumns = [
+          row[0],  // Fecha (A)
+          row[2],  // Requisición (C)
+          row[3],  // Orden de Compra (D)
+          row[5],  // Dependencia (F)
+          row[6],  // Pedido (G)
+          row[7],  // Status SIFF (H)
+          row[9],  // Proveedor (J)
+          row[10], // Unidad (K)
+          row[11], // Descripción de Unidad (L)
+          row[12],  // Monto (M)
+          row[13]  // Factura (N)
+        ];
+        selectedColumns.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell || '';
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+    }
+
+    function applyFilters(data) {
+      const fecha = document.getElementById('filtroFecha').value.toLowerCase();
+      const requisicion = document.getElementById('filtroRequisicion').value.toLowerCase();
+      const orden = document.getElementById('filtroOrden').value.toLowerCase();
+      const dependencia = document.getElementById('filtroDependencia').value.toLowerCase();
+      const proveedor = document.getElementById('filtroProveedor').value.toLowerCase();
+      const numero = document.getElementById('filtroNumero').value.toLowerCase();
+      const pedido = document.getElementById('filtroPedido').value.toLowerCase();
+
+      return data.filter(row =>
+        (row[0] || '').toLowerCase().includes(fecha) &&
+        (row[2] || '').toLowerCase().includes(requisicion) &&
+        (row[3] || '').toLowerCase().includes(orden) &&
+        (row[5] || '').toLowerCase().includes(dependencia) &&
+        (row[6] || '').toLowerCase().includes(pedido) &&
+        (row[9] || '').toLowerCase().includes(proveedor) &&
+        (row[10] || '').toLowerCase().includes(numero)
+      );
+    }
+
+    async function init() {
+      const allData = await fetchData();
+      renderTable(allData);
+
+      const inputs = document.querySelectorAll('input[type="text"]');
+      inputs.forEach(input => {
+        input.addEventListener('input', () => {
+          const filtered = applyFilters(allData);
+          renderTable(filtered);
+        });
+      });
+    }
+
+    init();
+  </script>
+{% if session.get('role') == 'admin' and 'seguimiento.html' == 'index.html' %}
+<hr>
+<h3>Admin rápido: crear usuario</h3>
+<form class="inline" method="post" action="{{ url_for('create_user') }}">
+  <input name="username" placeholder="nuevo usuario" required>
+  <input name="password" placeholder="contraseña" required>
+  <select name="role">
+    <option value="lectura">lectura</option>
+    <option value="captura">captura</option>
+    <option value="admin">admin</option>
+  </select>
+  <button type="submit">Crear</button>
+</form>
+{% endif %}
+{% endblock %}

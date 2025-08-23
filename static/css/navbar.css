@@ -1,0 +1,23 @@
+:root{
+  --nav-h: 64px;
+  --c1:#FC712B; --c2:#FD9319; --c3:#FECD5A; --c4:#07B1BC; --c5:#2B8180;
+}
+.navbar{position:fixed; inset:0 0 auto 0; height:var(--nav-h);
+  background: linear-gradient(180deg, var(--c5), var(--c4)); color:#fff; z-index:1000;
+  border-bottom:1px solid rgba(255,255,255,.12); box-shadow: 0 10px 24px rgba(0,0,0,.06);}
+.nav-inner{max-width:1100px; margin:0 auto; height:100%; display:flex; align-items:center; gap:16px; padding:0 16px}
+.brand{display:inline-flex; align-items:center; gap:10px; color:#fff; text-decoration:none; font-weight:800; letter-spacing:.2px}
+.brand .logo{display:inline-flex; width:28px; height:28px; color:var(--c3)}
+.menu{display:flex; gap:10px; margin-left:auto; align-items:center}
+.menu a{color:#fff; text-decoration:none; padding:8px 12px; border-radius:12px; font-weight:600}
+.menu a:hover{ background: rgba(255,255,255,.10) }
+.menu a.active{ background: rgba(255,255,255,.14); color: var(--c3) }
+.nav-toggle{ display:none; background:none; border:0; color:#fff }
+@media (max-width: 780px){
+  .nav-toggle{ display:inline-flex }
+  .menu{ position: absolute; top: var(--nav-h); left:0; right:0;
+    background: linear-gradient(180deg, var(--c5), var(--c4));
+    flex-direction: column; align-items: stretch; padding: 10px; display:none; }
+  .menu.open{ display:flex }
+  .menu a{ padding: 12px }
+}

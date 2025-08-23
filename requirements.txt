@@ -1,0 +1,9 @@
+# Core
+Flask>=3.0,<4.0
+gunicorn>=21.2
+
+# If your app uses any of these, uncomment as needed:
+# Flask-Login
+# Flask-WTF
+# Flask-SQLAlchemy
+# python-dotenv

@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block title %}Iniciar sesión · Gestión Talleres{% endblock %}
+{% block content %}
+<div class="login-wrap">
+  <div class="login-grid">
+    <aside class="login-brand" aria-hidden="true">
+      <div class="login-brand-inner">
+        <div class="brand-badge">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 12L12 4l8 8-8 8-8-8Z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="12" cy="12" r="2.75" fill="currentColor"/>
+          </svg>
+        </div>
+        <h2>Gestión Talleres</h2>
+        <p>Proyecto Talleres Integral.</p>
+      </div>
+
+
+
+    </aside>
+
+    <section class="login-card" aria-label="Iniciar sesión">
+      <header class="login-header">
+        <h1>Bienvenido</h1>
+        <p>Ingresa tus credenciales para continuar.</p>
+      </header>
+
+      <form method="post" class="login-form" autocomplete="on" style="display:grid;gap:12px">
+        <label class="input-group">
+          <span class="icon" aria-hidden="true">👤</span>
+          <input name="username" placeholder="Usuario" required autofocus autocomplete="username">
+        </label>
+        <label class="input-group">
+          <span class="icon" aria-hidden="true">🔒</span>
+          <input id="pwd" name="password" type="password" placeholder="Contraseña" required autocomplete="current-password">
+          <button type="button" class="showpwd" aria-controls="pwd" aria-pressed="false" title="Mostrar/Ocultar">👁️</button>
+        </label>
+        <button type="submit" class="btn btn-lg">Entrar</button>
+      </form>
+
+    </section>
+  </div>
+</div>
+<script>
+const btn = document.querySelector('.showpwd');
+if (btn){
+  btn.addEventListener('click', () => {
+    const inp = document.getElementById(btn.getAttribute('aria-controls'));
+    const isPwd = inp.getAttribute('type') === 'password';
+    inp.setAttribute('type', isPwd ? 'text' : 'password');
+    btn.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
+  });
+}
+</script>
+{% endblock %}

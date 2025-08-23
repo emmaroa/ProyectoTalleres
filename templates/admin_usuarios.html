@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios & Permisos · Gestión Talleres{% endblock %}
+{% block content %}
+<h1>Usuarios & Permisos</h1>
+<p class="mt-2" style="color:var(--muted)">Crea, cambia rol, reinicia contraseña o elimina usuarios. (Solo administradores)</p>
+<div class="section grid cols-2 mt-6">
+  <div class="card">
+    <h2>Crear usuario</h2>
+    <form class="grid" method="post">
+      <input type="hidden" name="action" value="create">
+      <input name="username" placeholder="Usuario" required>
+      <input name="password" placeholder="Contraseña" required>
+      <select name="role">
+        <option value="lectura">lectura</option>
+        <option value="captura">captura</option>
+        <option value="admin">admin</option>
+      </select>
+      <button class="btn" type="submit">Crear</button>
+    </form>
+  </div>
+  <div class="card" style="grid-column: 1 / -1;">
+    <h2 class="mt-2">Lista de usuarios</h2>
+    <div class="section">
+      <table>
+        <thead><tr><th>ID</th><th>Usuario</th><th>Rol</th><th style="width:260px">Acciones</th></tr></thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>
+              <form method="post" class="inline" style="display:inline-flex; gap:8px; align-items:center">
+                <input type="hidden" name="action" value="update_role">
+                <input type="hidden" name="user_id" value="{{ u.id }}">
+                <select name="role">
+                  <option value="lectura" {% if u.role=='lectura' %}selected{% endif %}>lectura</option>
+                  <option value="captura" {% if u.role=='captura' %}selected{% endif %}>captura</option>
+                  <option value="admin" {% if u.role=='admin' %}selected{% endif %}>admin</option>
+                </select>
+                <button class="btn btn-outline" type="submit">Cambiar</button>
+              </form>
+            </td>
+            <td>
+              <form method="post" class="inline" style="display:inline-flex; gap:8px; align-items:center">
+                <input type="hidden" name="action" value="reset_pwd">
+                <input type="hidden" name="user_id" value="{{ u.id }}">
+                <input name="newpwd" placeholder="Nueva contraseña" required>
+                <button class="btn" type="submit">Actualizar contraseña</button>
+              </form>
+              <form method="post" class="inline" onsubmit="return confirm('¿Eliminar usuario?');" style="display:inline-flex; gap:8px; align-items:center; margin-left:8px">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="user_id" value="{{ u.id }}">
+                <button class="btn btn-muted" type="submit">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
